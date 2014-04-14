@@ -1,0 +1,57 @@
+@CHARSET "UTF-8";
+
+.wpmuif-field .mu-image,
+.wpmuif-field .mu-image-remove {
+	display: inline-block;
+	margin-right: 8px;
+}
+
+.rtl .wpmuif-field .mu-image,
+.rtl .wpmuif-field .mu-image-remove {
+	margin-left: 8px;
+	margin-right: auto;
+}
+
+.wpmuif-image-holder {
+	display: block;
+	margin-bottom: 8px;
+}
+
+.wpmuif-image-holder .image {
+	display: inline-block;
+	margin: 0 3px;
+	position: relative;
+	cursor: pointer;
+}
+
+.wpmuif-image-holder .image::after {
+	content: "";
+	color: #fff;
+	text-align: center;
+	line-height: 1.5em;
+	display: none;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	opacity: 0.7;
+	background: rgba(0, 0, 0, 0.7) url("../images/remove.png") center center no-repeat;
+}
+
+.wpmuif-image-holder .image:hover::after {
+	display: block;
+}
+
+.wpmuif-image-holder img {
+	vertical-align: middle;
+}
+
+.wpmuif-remove-confirm,
+.wpmuif-inputs {
+	display: none;
+}
+
+.wpmuif-remove-confirm .button {
+	vertical-align: bottom;
+}
