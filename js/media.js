@@ -8,38 +8,48 @@
 
 		$( '.mu-image' ).livequery( function() {
 			// the button itself
-			var $button = $( this ),
-				// remove button
-				$remove = $button.parent().find( '.mu-image-remove' ),
+			var $button = $( this );
+
+			// the parent
+			$button.the_parent = $button.parent();
+
+			// Temporary selection holder
+			$button.selected_ids = [];
+			$button.the_parent.find( '.image-id' ).each( function( index, element ) {
+				$button.selected_ids.push( element.value );
+			} );
+
+			// remove button
+			var $remove = $button.the_parent.find( '.mu-image-remove' ),
 				// remove confirm message
-				$remove_confirm = $button.parent().find( '.remove-confirm' ),
+				$remove_confirm = $button.the_parent.find( '.remove-confirm' ),
 				// image placeholder
-				$image_holder = $button.parent().find( '.image-holder' ),
+				$image_holder = $button.the_parent.find( '.image-holder' ),
 				// field settings
-				mu_settings = $button.data(),
+				settings = $button.data(),
 				// placeholder size
-				image_size = 'width="'+ mu_settings.imagePlaceholderWidth +'" height="'+ mu_settings.imagePlaceholderHeight +'"';
+				image_size = 'width="'+ settings.imagePlaceholderWidth +'" height="'+ settings.imagePlaceholderHeight +'"';
 				// items index
 				last_index = 1;
 
 			// remove image from multiple
 			$image_holder.on( 'click', '.image', function() {
-				if ( !confirm( mu_settings.removeConfirmMessage ) ) {
+				if ( !confirm( settings.removeConfirmMessage ) ) {
 					return false;
 				}
 
 				var remove_index = '.image-'+ parseInt( $( this ).remove().attr( 'data-index' ) );
-				$button.parent().find( '.inputs' ).find( remove_index ).remove();
+				$button.the_parent.find( '.inputs' ).find( remove_index ).remove();
 
 				// reset component if all images removed
 				if ( $image_holder.find( '.image' ).length < 1 ) {
 					// dummy placeholder image
-					$image_holder.html( '<img src="'+ mu_settings.imagePlaceholder +'" '+ image_size +' alt="" />' );
+					$image_holder.html( '<img src="'+ settings.imagePlaceholder +'" '+ image_size +' alt="" />' );
 
 					// hide remove button
 					$remove.css( 'display', 'none' );
 				}
-			});
+			} );
 
 			// remove button clicked
 			$remove.on( 'click', function() {
@@ -52,7 +62,7 @@
 			} );
 
 			// remove confirm message buttons clicked
-			$remove_confirm.find( '.confirm-button' ).click( function(){
+			$remove_confirm.find( '.confirm-button' ).click( function() {
 				if ( $( this ).is( '.confirm-yes' ) ) {
 					// agreed on removal, reset fields values
 					if ( $button.hasClass( 'multiple' ) ) {
@@ -60,11 +70,14 @@
 						clear_multiple_images();
 					} else {
 						// single image
-						$button.parent().find( '.image-url, .image-id' ).val( '' );
+						$button.the_parent.find( '.image-url, .image-id' ).val( '' );
 					}
 
+					// clear selected ids
+					$button.selected_ids = [];
+
 					// dummy placeholder image
-					$image_holder.html( '<img src="'+ mu_settings.imagePlaceholder +'" '+ image_size +' alt="" />' );
+					$image_holder.html( '<img src="'+ settings.imagePlaceholder +'" '+ image_size +' alt="" />' );
 
 					// hide remove button
 					$remove.css( 'display', 'none' );
@@ -91,16 +104,30 @@
 				// create and open new file frame
 				file_frame = wp.media( {
 					//Title of media manager frame
-					title: mu_settings.frameTitle,
+					title: settings.frameTitle,
 					library: {
-						type: mu_settings.fileType
+						type: settings.fileType
 					},
 					button: {
 						//Button text
-						text: mu_settings.selectButtonLabel
+						text: settings.selectButtonLabel
 					},
 					//Do not allow multiple files, if you want multiple, set true
 					multiple: is_multiple,
+				} );
+
+				// pre-selection
+				file_frame.on( 'open', function() {
+					// uploader selection
+					var selection = file_frame.state().get( 'selection' ),
+						attachment = null;
+
+					// pre-selection loop
+					$.each( $button.selected_ids, function( index, image_id ) {
+						attachment = wp.media.attachment( image_id );
+						attachment.fetch();
+						selection.add( attachment ? [ attachment ] : [] );
+					} );
 				} );
 
 				// callback for selected image
@@ -123,12 +150,14 @@
 					}
 
 					// loop through selected images
+					$button.selected_ids = [];
 					for ( var i = 0; i < selected.length; i++ ) {
 						parse_selected_item( selected[i], is_multiple );
+						$button.selected_ids.push( selected[i].id );
 					}
 
 					// trigger image(s) selected event
-					$( 'body' ).trigger( 'wpmuif_image_selected', [selected] );
+					$( 'body' ).trigger( 'wpmuif_image_selected', [ selected ] );
 				} );
 
 				// open file frame
@@ -138,47 +167,47 @@
 			// clear multiple images
 			function clear_multiple_images() {
 				$image_holder.empty();
-				$button.parent().find( '.inputs' ).empty();
+				$button.the_parent.find( '.inputs' ).empty();
 				last_index = 1;
 			}
 			
 			// handle selected item
 			function parse_selected_item( image_item, is_multiple ) {
 				// image url hidden field
-				var $url_field = $button.parent().find('.image-url');
+				var $url_field = $button.the_parent.find('.image-url');
 				
 				// image id hidden field
-				var $id_field = $button.parent().find('.image-id');
+				var $id_field = $button.the_parent.find('.image-id');
 
 				// create new inputs if multiple 
 				if ( is_multiple ) {
-					$id_field = $( '<input name="'+ wpmuif_sprintf( mu_settings.inputNames.id, last_index ) +'" type="hidden" value="" class="image-id image-'+ last_index +'" />' );
-					$url_field = $( '<input name="'+ wpmuif_sprintf( mu_settings.inputNames.url, last_index ) +'" type="hidden" value="" class="image-url image-'+ last_index +'" />' );
+					$id_field = $( '<input name="'+ wpmuif_sprintf( settings.inputNames.id, last_index ) +'" type="hidden" value="" class="image-id image-'+ last_index +'" />' );
+					$url_field = $( '<input name="'+ wpmuif_sprintf( settings.inputNames.url, last_index ) +'" type="hidden" value="" class="image-url image-'+ last_index +'" />' );
 				}
 
 				// set inputs values
-				$id_field.val(image_item.id);
-				$url_field.val(image_item.url);
+				$id_field.val( image_item.id );
+				$url_field.val( image_item.url );
 
 				// append inputs to it's holder if multiple
 				if ( is_multiple ) {
-					$button.parent().find('.inputs').append( [ $id_field, $url_field ] );
+					$button.the_parent.find( '.inputs' ).append( [ $id_field, $url_field ] );
 				}
 
 				// check if the image has thumbnail to use instead of full size image
 				if ( typeof image_item.sizes.thumbnail != 'undefined' ) {
 					// has thumb
 					if ( is_multiple ) {
-						$image_holder.append('<span class="image image-'+ last_index +'" data-index="'+ last_index +'"><img src="'+ image_item.sizes.thumbnail.url +'" '+ image_size +' alt="" /></span>');
+						$image_holder.append( '<span class="image image-'+ last_index +'" data-index="'+ last_index +'"><img src="'+ image_item.sizes.thumbnail.url +'" '+ image_size +' alt="" /></span>' );
 					} else {
-						$image_holder.html('<img src="'+ image_item.sizes.thumbnail.url +'" '+ image_size +' alt="" />');
+						$image_holder.html( '<img src="'+ image_item.sizes.thumbnail.url +'" '+ image_size +' alt="" />' );
 					}
 				} else {
 					// use full size image
 					if ( is_multiple ) {
-						$image_holder.append('<span class="image image-'+ last_index +'"><img src="'+ image_item.url +'" '+ image_size +' alt="" /></span>');
+						$image_holder.append( '<span class="image image-'+ last_index +'"><img src="'+ image_item.url +'" '+ image_size +' alt="" /></span>' );
 					} else {
-						$image_holder.html('<img src="'+ image_item.url +'" '+ image_size +' alt="" />');
+						$image_holder.html( '<img src="'+ image_item.url +'" '+ image_size +' alt="" />' );
 					}
 				}
 				// increase items length if multiple
@@ -190,6 +219,17 @@
 				$remove.css( 'display', 'inline-block' );
 			}
 		} );
+
+		// debugging
+		window.trace = function () {
+			if( window.console && arguments.length ) {
+				if ( arguments.length == 1 ) {
+					console.log( arguments[0] );
+				} else {
+					console.log( arguments );
+				}
+			}
+		};
 
 		// php like sprintf
 		window.wpmuif_sprintf = function () {
