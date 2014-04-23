@@ -259,7 +259,10 @@ class WP_Media_Uploader_Input
 	}
 }
 
-add_action( 'admin_init', 'wpmuif_test_admin_init' );
+// display only if test mode enabled
+if ( defined( 'WP_MU_TEST_MODE' ) )
+	add_action( 'admin_init', 'wpmuif_test_admin_init' );
+
 /**
  * TEST: WP Admin init
 */
@@ -269,8 +272,8 @@ function wpmuif_test_admin_init()
 	add_settings_section( 'wpmuif_text_section', __( 'Media Uploader Field Input Test Section' ), '__return_false', 'media' );
 
 	// Add the fields with the section
-	add_settings_field( 'wpmuif_single_test', __( 'Single Image' ), 'wpmuif_input_callback', 'media', 'wpmuif_text_section', array( 'multiple' => 'no', 'input_name' => 'wpmuif_single_test' ) );
-	add_settings_field( 'wpmuif_multiple_test', __( 'Multiple Image' ), 'wpmuif_input_callback', 'media', 'wpmuif_text_section', array( 'multiple' => 'yes', 'input_name' => 'wpmuif_multiple_test' ) );
+	add_settings_field( 'wpmuif_single_test', __( 'Single Image' ), 'wpmuif_test_input_callback', 'media', 'wpmuif_text_section', array( 'multiple' => 'no', 'input_name' => 'wpmuif_single_test' ) );
+	add_settings_field( 'wpmuif_multiple_test', __( 'Multiple Image' ), 'wpmuif_test_input_callback', 'media', 'wpmuif_text_section', array( 'multiple' => 'yes', 'input_name' => 'wpmuif_multiple_test' ) );
 
 	// Register our setting
 	register_setting( 'media', 'wpmuif_single_test' );
@@ -282,7 +285,7 @@ function wpmuif_test_admin_init()
  * 
  * @param array $args
  */
-function wpmuif_input_callback( $args )
+function wpmuif_test_input_callback( $args )
 {
 	$input = new WP_Media_Uploader_Input( $args );
 	$input->set_value( get_option( $args['input_name'], array() ) )->output_input( true );
