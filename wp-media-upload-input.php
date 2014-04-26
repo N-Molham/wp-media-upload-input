@@ -12,8 +12,11 @@ License: GPL
 /**
  * Constants
  */
-define( 'WP_MU_DIR', plugin_dir_path( __FILE__ ) );
-define( 'WP_MU_URL', plugin_dir_url( __FILE__ ) );
+if ( !defined( 'WP_MU_DIR' ) )
+	define( 'WP_MU_DIR', plugin_dir_path( __FILE__ ) );
+
+if ( !defined( 'WP_MU_URL' ) )
+	define( 'WP_MU_URL', plugin_dir_url( __FILE__ ) );
 
 class WP_Media_Uploader_Input
 {
@@ -109,6 +112,17 @@ class WP_Media_Uploader_Input
 	}
 
 	/**
+	 * Get input option(s)
+	 * 
+	 * @param string $option
+	 * @return mixed
+	 */
+	public function get_options( $option = '' )
+	{
+		return isset( $this->settings[$option] ) ? $this->settings[$option] : $this->settings;
+	}
+
+	/**
 	 * Set/Update single input setting option
 	 * 
 	 * @param string $option
@@ -183,7 +197,7 @@ class WP_Media_Uploader_Input
 					'url' => '', 
 			);
 
-			// clear single file value if it was
+			// wrap single file value if it was
 			if ( isset( $this->value['id'] ) )
 				$this->value = array( $item_defualt );
 
