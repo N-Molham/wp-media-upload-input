@@ -38,8 +38,16 @@
 					return false;
 				}
 
-				var remove_index = '.image-'+ parseInt( $( this ).remove().attr( 'data-index' ) );
+				var $img = $( this ),
+					remove_index = '.image-'+ parseInt( $img.remove().attr( 'data-index' ) );
+
+				// remove inputs
 				$button.the_parent.find( '.inputs' ).find( remove_index ).remove();
+
+				// remove id
+				var id_index = $button.selected_ids.indexOf( $img.data( 'id' ).toString() );
+				if ( id_index > -1 )
+					$button.selected_ids.splice( id_index, 1 );
 
 				// reset component if all images removed
 				if ( $image_holder.find( '.image' ).length < 1 ) {
@@ -119,15 +127,18 @@
 				// pre-selection
 				file_frame.on( 'open', function() {
 					// uploader selection
-					var selection = file_frame.state().get( 'selection' ),
+					var pre_selection = file_frame.state().get( 'selection' ),
 						attachment = null;
 
 					// pre-selection loop
 					$.each( $button.selected_ids, function( index, image_id ) {
 						attachment = wp.media.attachment( image_id );
 						attachment.fetch();
-						selection.add( attachment ? [ attachment ] : [] );
+						pre_selection.add( attachment ? [ attachment ] : [] );
 					} );
+
+					// trigger frame open event
+					$( 'body' ).trigger( 'wpmuif_media_frame_opened', [ file_frame, pre_selection ] );
 				} );
 
 				// callback for selected image
@@ -157,7 +168,7 @@
 					}
 
 					// trigger image(s) selected event
-					$( 'body' ).trigger( 'wpmuif_image_selected', [ selected ] );
+					$( 'body' ).trigger( 'wpmuif_selected_items', [ file_frame, selected ] );
 				} );
 
 				// open file frame
@@ -194,22 +205,23 @@
 					$button.the_parent.find( '.inputs' ).append( [ $id_field, $url_field ] );
 				}
 
+				var img_url;
+
 				// check if the image has thumbnail to use instead of full size image
 				if ( typeof image_item.sizes.thumbnail != 'undefined' ) {
 					// has thumb
-					if ( is_multiple ) {
-						$image_holder.append( '<span class="image image-'+ last_index +'" data-index="'+ last_index +'"><img src="'+ image_item.sizes.thumbnail.url +'" '+ image_size +' alt="" /></span>' );
-					} else {
-						$image_holder.html( '<img src="'+ image_item.sizes.thumbnail.url +'" '+ image_size +' alt="" />' );
-					}
+					img_url = image_item.sizes.thumbnail.url;
 				} else {
 					// use full size image
-					if ( is_multiple ) {
-						$image_holder.append( '<span class="image image-'+ last_index +'"><img src="'+ image_item.url +'" '+ image_size +' alt="" /></span>' );
-					} else {
-						$image_holder.html( '<img src="'+ image_item.url +'" '+ image_size +' alt="" />' );
-					}
+					img_url = image_item.url;
 				}
+
+				if ( is_multiple ) {
+					$image_holder.append( '<span class="image image-'+ last_index +'" data-id="'+ image_item.id +'"><img src="'+ img_url +'" '+ image_size +' alt="" /></span>' );
+				} else {
+					$image_holder.html( '<img src="'+ img_url +'" '+ image_size +' alt="" />' );
+				}
+
 				// increase items length if multiple
 				if ( is_multiple ) {
 					last_index++;

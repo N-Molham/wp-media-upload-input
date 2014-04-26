@@ -14,7 +14,7 @@ $input_settings = array (
 		'input_id_name' => 'id', // item ID input field name
 		'input_url_name' => 'url', // item URL input field name
 		'multiple' => 'no', // select multiple items or not, "yes" or "no"
-		'data_array' => true, // get just the URL or array( 'id' => 0, 'url' => '' )
+		'data_array' => true, // get id & url as an array or not
 		'image_placeholder' => WP_MU_URL .'images/placeholder.png', // image placeholder url
 		'image_placeholder_width' => '70', // image width
 		'image_placeholder_height' => '70', // image height

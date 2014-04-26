@@ -210,7 +210,7 @@ class WP_Media_Uploader_Input
 				if ( null === $is_selected )
 					$is_selected = '' != $item['url'];
 
-				$output .= '<span class="image image-'. $index .'" data-index="'. $index .'"><img src="'. ( '' == $item['url'] ? $this->settings['image_placeholder'] : $item['url'] ) .'" '. $img_size .' /></span>';
+				$output .= '<span class="image image-'. $index .'" data-index="'. $index .'" data-id="'. $item['id'] .'"><img src="'. ( '' == $item['url'] ? $this->settings['image_placeholder'] : $item['url'] ) .'" '. $img_size .' /></span>';
 				$inputs_fields .= '<input name="'. sprintf( $inputs_name['id'], $index ) .'" type="hidden" value="'. (int) esc_attr( $item['id'] ) .'" class="image-id image-'. $index .'" />';
 				$inputs_fields .= '<input name="'. sprintf( $inputs_name['url'], $index ) .'" type="hidden" value="'. esc_attr( $item['url'] ) .'" class="image-url image-'. $index .'" />';
 			}
