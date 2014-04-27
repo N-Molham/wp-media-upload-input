@@ -72,11 +72,16 @@ define( 'WP_MU_TEST_MODE', true );
 
 ## WP Hooks ##
 Note : remember to user those filters before creating an instance
-Filter | Arguments | Description
---- | --- | --- 
-`wpmuif_input_value` | `$value` | The input default ( initial ) value
-`wpmuif_input_args` | `$settings` | The input settings options parsed with default values
-`wpmuif_input_field` | `$output` , `$input_instance` | The input HTML layout to display
+
+- `wpmuif_input_value`
+	- parameters: `$value`
+    - The input default ( initial ) value
+- `wpmuif_input_args`
+	- parameters: `$settings`
+    - The input settings options parsed with default values
+- `wpmuif_input_field`
+	- parameters: `$output` , `$input_instance`
+    - The input HTML layout to display
 
 Example:
 ```php
@@ -87,10 +92,13 @@ add_filter( 'wpmuif_input_field', function( $output ) {
 
 ## jQuery Events ##
 Note: remember  to listen for those events on the `body` element
-Filter | Arguments | Description
---- | --- | --- 
-`wpmuif_media_frame_opened` | `file_frame` , `pre_selection` | Passes the File ( Media ) frame instance and the items to be selected by default
-`wpmuif_selected_items` | `file_frame` , `selected` | Passes the File ( Media ) frame instance and the selected items by the user
+
+- `wpmuif_media_frame_opened`
+	- parameters: `file_frame` , `pre_selection`
+    - Passes the File ( Media ) frame instance and the items to be selected by default
+- `wpmuif_selected_items`
+	- parameters: `file_frame` , `selected`
+    - Passes the File ( Media ) frame instance and the selected items by the user
 
 Example: 
 ```javascript
