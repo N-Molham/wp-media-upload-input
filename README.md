@@ -1,6 +1,6 @@
 # WordPress Media Uploader Input Field
 
-A way to reuse media uploader in wordpress 3.5 or greater which is very very helpful and faster from the old one, OOP with chaining
+A way to reuse media uploader in WordPress 3.5 or greater which is very very helpful and faster from the old one, OOP with chaining
 
 ## Usage ##
 * just place the plugin folder in you plugins directory and activate it
@@ -15,7 +15,7 @@ $input_settings = array (
 		'input_url_name' => 'url', // item URL input field name
 		'multiple' => 'no', // select multiple items or not, "yes" or "no"
 		'data_array' => true, // get id & url as an array or not
-		'image_placeholder' => WP_MU_URL .'images/placeholder.png', // image placeholder url
+		'image_placeholder' => WP_MU_URL .'images/placeholder.png', // image placeholder URL
 		'image_placeholder_width' => '70', // image width
 		'image_placeholder_height' => '70', // image height
 		'media_uploader_button_label' => __( 'Media Uploader' ), // Media Uploader button name
@@ -29,13 +29,75 @@ $input_settings = array (
 		'remove_confirm_no' => __( 'No' ), // "No" answer label
 		'file_type' => 'image', // file type of items visible on Media Uploader window open
 );
+// initial input with settings
 $input = new WP_Media_Uploader_Input( $input_settings );
+
+// or set settings later
 $input->set_options( $input_settings );
-$input->set_option( 'option_name', 'option_value' ); // set single option
-$input->set_value( array() )->output_input( true ); // "output_input" with true passed will echo the layout and if false passed ( Default ) it will return HTML string of the layout
+
+// or set a single option 
+$input->set_option( 'option_name', 'option_value' );
+
+// input value
+$input->set_value( array ( 
+		'id' => 246, 
+		'url' => 'http://opensource.org/trademarks/opensource/OSI-logo-300x352.png' 
+	) 
+);
+
+// "output_input" with true passed will echo the layout and if false passed ( Default ) it will return HTML string
+$input->output_input( true ); 
 ```
 
-the code is highly customizable through filters, I will list them with docs as soon as possible but they are fairly easy to understand.
+the code is highly customizable through filter hooks and jQuery events
+
+## Output Result ###
+- [Input Empty](https://raw.githubusercontent.com/N-Molham/wp-media-upload-input/master/images/demo-inputs-empty.png)
+- [Input With Selected items](https://raw.githubusercontent.com/N-Molham/wp-media-upload-input/master/images/demo-inputs-filled.png)
+- [Media Frame opened](https://raw.githubusercontent.com/N-Molham/wp-media-upload-input/master/images/demo-media-frame-preselection.png)
+
+## Live Preview ###
+- Download the plugin.
+- and define this constant `WP_MU_TEST_MODE` in your `wp-config.php` file.
+- and go to Dashboard > Settings > Media
+
+```php
+// wp-config.php
+
+// test input field enabled
+define( 'WP_MU_TEST_MODE', true );
+
+/* That's all, stop editing! Happy blogging. */
+```
+
+## WP Hooks ##
+Note : remember to user those filters before creating an instance
+Filter | Arguments | Description
+--- | --- | --- 
+`wpmuif_input_value` | `$value` | The input default ( initial ) value
+`wpmuif_input_args` | `$settings` | The input settings options parsed with default values
+`wpmuif_input_field` | `$output` , `$input_instance` | The input HTML layout to display
+
+Example:
+```php
+add_filter( 'wpmuif_input_field', function( $output ) {
+	return '<div class="media-input-wrapper">'. $output .'</div>';
+} );
+```
+
+## jQuery Events ##
+Note: remember  to listen for those events on the `body` element
+Filter | Arguments | Description
+--- | --- | --- 
+`wpmuif_media_frame_opened` | `file_frame` , `pre_selection` | Passes the File ( Media ) frame instance and the items to be selected by default
+`wpmuif_selected_items` | `file_frame` , `selected` | Passes the File ( Media ) frame instance and the selected items by the user
+
+Example: 
+```javascript
+$( 'body' ).on( 'wpmuif_media_frame_opened', function( event, file_frame, pre_selection ) {
+	console.log( file_frame, pre_selection );
+} );
+```
 
 ** Contact if there are any problems **
 

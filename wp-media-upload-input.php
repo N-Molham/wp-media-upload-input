@@ -57,6 +57,7 @@ class WP_Media_Uploader_Input
 	 * Set input value(s)
 	 * 
 	 * @param array $value
+	 * @return WP_Media_Uploader_Input
 	 */
 	public function set_value( $value )
 	{
@@ -76,6 +77,7 @@ class WP_Media_Uploader_Input
 	 * Set/Change input settings options
 	 * 
 	 * @param array|string $settings
+	 * @return WP_Media_Uploader_Input
 	 */
 	public function set_options( $settings )
 	{
@@ -123,10 +125,31 @@ class WP_Media_Uploader_Input
 	}
 
 	/**
+	 * Get input value
+	 * 
+	 * @return array
+	 */
+	public function get_value()
+	{
+		return $this->value;
+	}
+
+	/**
+	 * Check if input is multiple or not
+	 * 
+	 * @return boolean
+	 */
+	public function is_multiple()
+	{
+		return $this->is_multiple;
+	}
+
+	/**
 	 * Set/Update single input setting option
 	 * 
 	 * @param string $option
 	 * @param mixed $value
+	 * @return WP_Media_Uploader_Input
 	 */
 	public function set_option( $option, $value )
 	{
@@ -267,9 +290,9 @@ class WP_Media_Uploader_Input
 
 		// return or echo
 		if ( $echo )
-			echo apply_filters( 'wpmuif_input_field', $output );
+			echo apply_filters( 'wpmuif_input_field', $output, $this );
 		else
-			return apply_filters( 'wpmuif_input_field', $output );
+			return apply_filters( 'wpmuif_input_field', $output, $this );
 	}
 }
 
