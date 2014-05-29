@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: WP Media Uploader Input Field
-Plugin URI: http://nabeel.molham.me/plugins/wp-media-upload-input
+Plugin URI: http://nabeel.molham.me/wp-plugins/wp-media-upload-input
 Description: Uses WordPress media uploader to create input fields so you can use in your projects 
 Version: 2.0
 Author: Nabeel Molham
