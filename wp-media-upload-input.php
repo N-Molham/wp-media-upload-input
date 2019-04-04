@@ -18,6 +18,8 @@ if ( !defined( 'WP_MU_DIR' ) )
 if ( !defined( 'WP_MU_URL' ) )
 	define( 'WP_MU_URL', plugin_dir_url( __FILE__ ) );
 
+if ( !class_exists( 'WP_Media_Uploader_Input' ) ) :
+
 class WP_Media_Uploader_Input
 {
 	/**
@@ -294,7 +296,27 @@ class WP_Media_Uploader_Input
 		else
 			return apply_filters( 'wpmuif_input_field', $output, $this );
 	}
+
+
+	/**
+	 * Display image input
+	 * 
+	 * @param array|string $settings ( Optional )
+	 * @param array $value ( Optional )Input default value or values if multiple
+	 * @return string|void based in $echo value
+	 *
+	 * @uses self::__constuct
+	 * @uses self::set_options
+	 * @uses self::set_value
+	 * @uses self::output_input
+	 */
+	public static function image_input( $settings = '', $value = '', $echo = true )
+	{
+		return ( new WP_Media_Uploader_Input( $settings, $value ) )->output_input( $echo );
+	}
 }
+
+endif; // class check end
 
 // display only if test mode enabled
 if ( defined( 'WP_MU_TEST_MODE' ) )
